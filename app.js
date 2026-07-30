@@ -95,8 +95,8 @@ if (adminForm) {
             alert('تم اضافة المنتج بنجاح');
             adminForm.reset();
         } catch (err) {
-            alert('! حدث خطأ أثناء الحفظ');
-            console.error("Error adding document:" , e);
+            alert('! حدث خطأ أثناء الحفظ' +err.message);
+            console.error("Error adding document:" , err);
         }
     };
 
@@ -131,6 +131,6 @@ if (adminProductsContainer) {
         adminProductsContainer.innerHTML += card;
         });
     });
-    
+
 
 }
