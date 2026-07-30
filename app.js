@@ -48,7 +48,7 @@ async function loadProducts(categoryFilter = 'all') {
             <h3 class="product-title">${item.name}</h3>
             <div class="product-price">${item.price} ج.م</div>
             ${isAvailable} ? `<a href="${whatsappLink}" target="-blank" class="order-btn">طلب عبر الواتساب</a>`
-            : `<button class="order-btn disabled" disabled> غير متوفر حاليا</button>`
+            : `<button class="order-btn disabled" disabled>متوفر غير </button>`
              }
             </div>
             </div>
@@ -68,25 +68,38 @@ if (adminForm) {
     adminForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const newProduct = {
-            name: document.getElementById('p-name').value,
-            price:Number(document.getElementById('p-price').value),
-            category: document.getElementById('p-category').value,
-            image:document.getElementById('p-image').value,
-            inStock: document.getElementById('p-instock').checked
+        const imageFile = document.getElementById('p-image').files[0];
+        
+        if (!imageFile) {
 
-        };
+          alert('برجاء اختيار صورة المنتج');
+          return;
+
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = async (e) => {
+            const imageUrl = e.target.result;
+            const newProduct = {
+            name: document.getElementById('p-name').value,
+            price: Number(document.getElementById('p-price').value),
+            category: document.getElementById('p-category').value,
+            image: imageUrl,
+            inStock: document.getElementById('p-instock').checked
+            };
+        
         try{
             await addDoc(collection(db, "products"), newProduct);
             alert('تم اضافة المنتج بنجاح');
             adminForm.reset();
-        }catch (e) {
+        } catch (e) {
             alert('! حدث خطأ أثناء الحفظ');
             console.error("Error adding document:" , e);
         }
-    });
+    };
 
-}
 
-loadProducts();
+
+reader.readAsDataURL(imageFile);
 
