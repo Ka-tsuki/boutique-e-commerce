@@ -1,5 +1,5 @@
 import {initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
 const firebaseConfig = {
@@ -81,6 +81,7 @@ if (adminForm) {
 
         reader.onload = async (e) => {
             const imageUrl = e.target.result;
+
             const newProduct = {
             name: document.getElementById('p-name').value,
             price: Number(document.getElementById('p-price').value),
@@ -89,11 +90,11 @@ if (adminForm) {
             inStock: document.getElementById('p-instock').checked
             };
         
-        try{
+     try {
             await addDoc(collection(db, "products"), newProduct);
             alert('تم اضافة المنتج بنجاح');
             adminForm.reset();
-        } catch (e) {
+        } catch (err) {
             alert('! حدث خطأ أثناء الحفظ');
             console.error("Error adding document:" , e);
         }
@@ -103,3 +104,33 @@ if (adminForm) {
 
 reader.readAsDataURL(imageFile);
 
+const adminProductsContainer = document.getElementById('admin-products-list');
+
+if (adminProductsContainer) {
+    onSnapshot(collection(db, "products"), (snapshot) => {
+        adminProductsContainer.innerHTML = '';
+
+        snapshot.forEach((docSnap) => {
+            const item = docSnap.data();
+            const id = docSnap.id;
+
+            const card = `
+            <div class= "admin-product-card">
+            <div class="admin-product-info">
+            <img src="${item.image}" alt="${item.name}" class="admin-product-img">
+            <div class="admin-product-details">
+            <h4>${item.name}</h4>
+            <p>السعر: ${item.price} ج.م</p>
+            </div>
+            </div>
+            <button onclick="deleteProduct('${id}')" class="delete-btn">
+
+            </button>
+            </div>
+        `;
+        adminProductsContainer.innerHTML += card;
+        });
+    });
+    
+
+}

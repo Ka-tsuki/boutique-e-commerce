@@ -138,3 +138,51 @@ body {
     background-color: #bdc3c7;
     cursor: not-allowed;
 }
+
+.admin-products-title {
+    margin-top: 30px;
+    font-size: 1.2rem;
+}
+
+.admin-products-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+}
+
+.admin-products-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.admin-products-details h4 {
+    margin: 0 0 5px 0;
+}
+
+.admin-products-details p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
