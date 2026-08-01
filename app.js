@@ -18,6 +18,32 @@ const db = getFirestore(app);
 const OWNER_WHATSAPP = "201093929315";
 
 
+function compressImage(file, maxWidth = 600, quality = 0.7) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            const img = new Image ();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvs');
+                let width = img.width, height = img.height;
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext ('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+        };
+    });
+}
+
+
 async function loadProducts(categoryFilter = 'all') {
     const grid = document.getElementById('products-grid');
     if (!grid) return;
@@ -67,20 +93,15 @@ const adminForm = document.getElementById('add-product-form');
 if (adminForm) {
     adminForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const imageFile = document.getElementById('p-image').files[0];
-        
         if (!imageFile) {
-
           alert('برجاء اختيار صورة المنتج');
           return;
-
+          
         }
-
-        const reader = new FileReader();
-
-        reader.onload = async (e) => {
-            const imageUrl = e.target.result;
+         
+          try {
+            const compressImagedImageUrl = await compressImage(imageFile);
 
             const newProduct = {
             name: document.getElementById('p-name').value,
@@ -89,16 +110,16 @@ if (adminForm) {
             image: imageUrl,
             inStock: document.getElementById('p-instock').checked
             };
-        
-     try {
+
             await addDoc(collection(db, "products"), newProduct);
             alert('تم اضافة المنتج بنجاح');
             adminForm.reset();
         } catch (err) {
             alert('! حدث خطأ أثناء الحفظ' +err.message);
-            console.error("Error adding document:" , err);
-        }
-    };
+          }
+      });
+
+   }
 
 
 
@@ -131,6 +152,18 @@ if (adminProductsContainer) {
         adminProductsContainer.innerHTML += card;
         });
     });
+    window.deleteProduct = async function (id) {
+        if (confirm("هل انت متاكد من حذف هذا المنتج؟")) {
+
+            try {
+                await deleteDoc(doc(db, "products" , id));
+                alert ("تم حذف المنتج بنجاح!");
+             } catch (error) {
+                console.error("خطأ في الحذف:", error);
+                alert ("! حدث خطأأثناء الحذف")
+             }
+        }
+    };
 
 
 }
